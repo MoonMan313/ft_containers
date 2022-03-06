@@ -34,7 +34,9 @@ namespace ft {
         }
 
         reference operator*() const {
-            return (*(rev_it - 1));
+            iterator_type tmp = rev_it;
+            --tmp;
+            return (*tmp);
         }
 
         reverse_iterator operator+ (difference_type n) const {
@@ -48,7 +50,7 @@ namespace ft {
 
         reverse_iterator  operator++(int) {
             reverse_iterator temp = *this;
-            --(*this);
+            --rev_it;
             return (temp);
         }
 
@@ -68,7 +70,7 @@ namespace ft {
 
         reverse_iterator  operator--(int) {
             reverse_iterator temp = *this;
-            ++(*this);
+            ++rev_it;
             return (temp);
         }
 

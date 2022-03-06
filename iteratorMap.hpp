@@ -7,6 +7,7 @@
 
 #include "Pair.hpp"
 #include <iostream>
+#include <cstddef>
 
 namespace ft{
     template <typename T>
@@ -20,11 +21,11 @@ namespace ft{
                 : value(value), left(left), right(right), parent(parent) {}
     };
 
-    template <typename T, typename node>
+    template <typename T>
     class iteratorMap {
     protected:
-        typedef ft::Node<T>             Node;
-        node                            *it;
+        typedef ft::Node<T>                 node;
+        node                                *it;
 
     public:
         typedef T                                   value_type;
@@ -33,9 +34,9 @@ namespace ft{
         typedef ptrdiff_t                           difference_type;
         typedef std::bidirectional_iterator_tag     iterator_category;
 
-        iteratorMap() : it(nullptr) {}
+        iteratorMap() : it(NULL) {}
         iteratorMap(node *it_node) : it(it_node) {}
-        iteratorMap(const iteratorMap &copy) : it(copy.it) {}
+        iteratorMap(iteratorMap const &copy) : it(copy.it) {}
         virtual ~iteratorMap() {}
 
         iteratorMap &operator=(const iteratorMap& value){
@@ -44,17 +45,15 @@ namespace ft{
             return (*this);
         }
         iteratorMap &operator ++ (void){
-            if (it->parent == nullptr)
-                it = nullptr;
-            else if (it->right) {
-                it = it->parent;
-                while (it->left)
+            if (it->right) {
+                it = it->right;
+                while (it && it->left)
                     it = it->left;
             }
             else {
                 node *tmp = it;
                 it = it->parent;
-                while (it->left != tmp) {
+                while (it && it->left != tmp && !(it->left != tmp && it->right != tmp)) {
                     tmp = it;
                     it = it->parent;
                 }
@@ -70,12 +69,12 @@ namespace ft{
         iteratorMap &operator -- (void) {
             if (it->left) {
                 it = it->left;
-                while (it->right)
+                while (it && it->right)
                     it = it->right;
             } else {
-                node tmp = it;
+                node *tmp = it;
                 it = it->parent;
-                while (it->right != tmp) {
+                while (it && it->right != tmp && !(it->left != tmp && it->right != tmp)) {
                     tmp = it;
                     it = it->parent;
                 }
@@ -91,6 +90,88 @@ namespace ft{
             return (it == value.it);
         }
         bool operator != (const iteratorMap& value) const{
+            return (it != value.it);
+        }
+        reference	operator*() {
+            return (it->value);
+        }
+        pointer operator->() {
+            return (&(it->value));
+        }
+
+    };
+
+
+
+    template <typename T>
+    class constIteratorMap {
+    protected:
+        typedef ft::Node<T>                 node;
+        node                                *it;
+
+    public:
+        typedef T                                   value_type;
+        typedef T const *                                  pointer;
+        typedef T const &                                  reference;
+        typedef ptrdiff_t                           difference_type;
+        typedef std::bidirectional_iterator_tag     iterator_category;
+
+        constIteratorMap() : it(NULL) {}
+        constIteratorMap(node *it_node) : it(it_node) {}
+        constIteratorMap(constIteratorMap const &copy) : it(copy.it) {}
+        virtual ~constIteratorMap() {}
+
+        constIteratorMap &operator=(const constIteratorMap& value){
+            if (this != &value)
+                it = value.it;
+            return (*this);
+        }
+        constIteratorMap &operator ++ (void){
+            if (it->right) {
+                it = it->right;
+                while (it && it->left)
+                    it = it->left;
+            }
+            else {
+                node *tmp = it;
+                it = it->parent;
+                while (it && it->left != tmp && !(it->left != tmp && it->right != tmp)) {
+                    tmp = it;
+                    it = it->parent;
+                }
+            }
+            return (*this);
+
+        }
+        constIteratorMap operator ++ (int) {
+            constIteratorMap tmp = *this;
+            ++(*this);
+            return (tmp);
+        }
+        constIteratorMap &operator -- (void) {
+            if (it->left) {
+                it = it->left;
+                while (it && it->right)
+                    it = it->right;
+            } else {
+                node *tmp = it;
+                it = it->parent;
+                while (it && it->right != tmp && !(it->left != tmp && it->right != tmp)) {
+                    tmp = it;
+                    it = it->parent;
+                }
+            }
+            return (*this);
+        }
+        constIteratorMap operator -- (int) {
+            constIteratorMap tmp = *this;
+            --(*this);
+            return (tmp);
+        }
+        bool operator == (const constIteratorMap& value) const{
+            return (it == value.it);
+        }
+        bool operator != (const constIteratorMap& value) const{
             return (it != value.it);
         }
         reference	operator*() {

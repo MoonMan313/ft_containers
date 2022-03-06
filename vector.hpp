@@ -19,8 +19,8 @@ namespace ft {
         typedef typename allocator_type::const_reference    const_reference;
         typedef typename allocator_type::pointer            pointer;
         typedef typename allocator_type::const_pointer      const_pointer;
-        typedef iteratorVector<value_type>                    iterator;
-        typedef iteratorVector<value_type const>              const_iterator;
+        typedef iteratorVector<value_type>                  iterator;
+        typedef iteratorVector<value_type const>            const_iterator;
         typedef ft::reverse_iterator<const_iterator>        const_reverse_iterator;
         typedef ft::reverse_iterator<iterator>              reverse_iterator;
         typedef size_t                                      size_type;
@@ -63,9 +63,12 @@ namespace ft {
             insert(begin(), first, last);
         }
 
-        vector (const vector& x){
-            clear();
-            insert(end(), x.begin(), x.end());
+        vector (const vector& x)
+            : _size(x._size),
+              _capacity(x._capacity),
+              _alloc(x._alloc),
+              _arr(x._arr) {
+            insert(begin(), x.begin(), x.end());
         }
 
         //(destructor)
@@ -155,13 +158,13 @@ namespace ft {
         void reserve (size_type n){
             if (n > _capacity){
                 value_type *new_arr = _alloc.allocate(n);
-                _capacity = n;
                 for(size_type i = 0; i < _size; ++i){
-                    _alloc.construct(new_arr + i, *(_arr + 1));
+                    _alloc.construct(new_arr + i, *(_arr + i));
                     _alloc.destroy(_arr + i);
                 }
                 if(_capacity)
                     _alloc.deallocate(_arr, _capacity);
+                _capacity = n;
                 _arr = new_arr;
             }
         }
